@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JKode Studio | Web & Mobile Development</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- RESET & BASE STYLES --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #0d0d0d;
+            color: #00ff41; /* Terminal Green */
+            font-family: 'Fira Code', monospace;
+            font-size: 16px;
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- CRT / SCANLINE EFFECTS --- */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.2) 50%,
+                rgba(0,0,0,0.2)
+            );
+            background-size: 100% 4px;
+            z-index: 999;
+            pointer-events: none; /* Click through */
+            animation: scroll 10s linear infinite;
+        }
+
+        .crt-flicker {
+            animation: flicker 0.15s infinite;
+            width: 100%;
+            max-width: 900px;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Subtle Glow on Text */
+        p, h1, h2, span, a, div {
+            text-shadow: 0 0 4px rgba(0, 255, 65, 0.4);
+        }
+
+        /* --- LAYOUT --- */
+        .terminal-window {
+            border: 2px solid #00ff41;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+            background: rgba(0, 20, 0, 0.6);
+            border-radius: 5px;
+        }
+
+        .header-prompt {
+            color: #ffb86c; /* Dracular Orange/Amber accent */
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .header-prompt .path {
+            color: #8be9fd; /* Cyan accent */
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-img {
+            max-width: 250px;
+            width: 100%;
+            height: auto;
+            /* Filter to make the logo match the green terminal aesthetic */
+            filter: grayscale(100%) brightness(0.8) sepia(100%) hue-rotate(70deg) saturate(3) drop-shadow(0 0 5px #00ff41);
+            transition: filter 0.3s ease;
+        }
+
+        .logo-img:hover {
+            /* Reveal original colors slightly on hover */
+            filter: grayscale(0%) drop-shadow(0 0 8px #00ff41);
+        }
+
+        .hero-section {
+            margin-bottom: 40px;
+            min-height: 60px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        /* --- TYPEWRITER CURSOR --- */
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.2em;
+            background-color: #00ff41;
+            vertical-align: bottom;
+            animation: blink 1s step-end infinite;
+        }
+
+        /* --- JSON SERVICES AREA --- */
+        .services-section {
+            margin-bottom: 40px;
+        }
+
+        .json-block {
+            background: rgba(0, 255, 65, 0.05);
+            padding: 15px;
+            border-left: 3px solid #00ff41;
+            font-size: 0.9rem;
+            white-space: pre-wrap; /* Keeps formatting */
+            word-break: break-word;
+            opacity: 0; /* Hidden initially for boot sequence */
+            transform: translateY(10px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        .key { color: #8be9fd; }
+        .string { color: #f1fa8c; }
+        .bracket { color: #ff79c6; }
+
+        /* --- CONTACT --- */
+        .contact-section {
+            margin-top: 20px;
+            border-top: 1px dashed #00ff41;
+            padding-top: 20px;
+            opacity: 0; /* Hidden initially */
+            transition: opacity 1s ease 0.5s;
+        }
+
+        .input-line {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .prompt-symbol {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .contact-link {
+            color: #00ff41;
+            text-decoration: none;
+            background: transparent;
+            border: none;
+            font-family: inherit;
+            font-size: inherit;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .contact-link:hover {
+            background-color: #00ff41;
+            color: #000;
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        @keyframes scroll {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 4px; }
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.97; }
+            5% { opacity: 0.95; }
+            10% { opacity: 0.9; }
+            15% { opacity: 0.95; }
+            20% { opacity: 0.99; }
+            50% { opacity: 0.95; }
+            55% { opacity: 0.9; }
+            60% { opacity: 0.99; }
+            80% { opacity: 0.96; }
+            100% { opacity: 0.98; }
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 600px) {
+            .terminal-window {
+                border: none;
+                box-shadow: none;
+                padding: 10px;
+                width: 100%;
+            }
+            h1 { font-size: 1.2rem; }
+            .json-block { font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scanlines"></div>
+
+    <div class="crt-flicker">
+        <div class="terminal-window">
+            
+            <div class="header-prompt">
+                <span>root@jkode-studio:</span><span class="path">~</span>$ ./init_portfolio.sh
+            </div>
+
+            <div class="logo-container">
+                <img src="http://139.162.5.199/jkode_transparent_padding.png" alt="JKode Studio Logo" class="logo-img">
+            </div>
+
+            <div class="hero-section">
+                <h1><span id="typewriter"></span><span class="cursor">&nbsp;</span></h1>
+            </div>
+
+            <div class="services-section">
+                <div class="json-block" id="json-output">
+<span class="bracket">{</span>
+  <span class="key">"agency"</span>: <span class="string">"JKode Studio"</span>,
+  <span class="key">"status"</span>: <span class="string">"Online"</span>,
+  <span class="key">"services"</span>: <span class="bracket">[</span>
+    <span class="string">"Web Development (React, Node.js)"</span>,
+    <span class="string">"Mobile App Dev (Flutter, React Native)"</span>,
+    <span class="string">"System Architecture & UI/UX"</span>
+  <span class="bracket">]</span>
+<span class="bracket">}</span>
+                </div>
+            </div>
+
+            <div class="contact-section" id="contact-output">
+                <p class="comment">// Ready to start a project?</p>
+                <div class="input-line">
+                    <span class="prompt-symbol">></span>
+                    <a href="mailto:contact@jkode.studio" class="contact-link">mailto:contact@jkode.studio</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const textToType = "Full Stack Web & Mobile Solutions...";
+            const typeWriterElement = document.getElementById('typewriter');
+            const jsonOutput = document.getElementById('json-output');
+            const contactOutput = document.getElementById('contact-output');
+            
+            let i = 0;
+            const typeSpeed = 50; // Speed in ms
+
+            function typeWriter() {
+                if (i < textToType.length) {
+                    typeWriterElement.textContent += textToType.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, typeSpeed);
+                } else {
+                    // Typing finished, trigger boot sequence
+                    revealContent();
+                }
+            }
+
+            function revealContent() {
+                // Fade in the JSON block
+                setTimeout(() => {
+                    jsonOutput.style.opacity = '1';
+                    jsonOutput.style.transform = 'translateY(0)';
+                }, 500);
+
+                // Fade in the Contact block
+                setTimeout(() => {
+                    contactOutput.style.opacity = '1';
+                }, 1200);
+            }
+
+            // Start the sequence
+            setTimeout(typeWriter, 800);
+        });
+    </script>
+</body>
+</html>
