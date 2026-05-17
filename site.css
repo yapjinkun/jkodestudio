@@ -508,6 +508,7 @@ h1 em, h2 em, h3 em, .serif {
   font-weight: 500;
   max-width: 24ch;
   text-wrap: balance;
+  color: #fff;
 }
 .cta-block h3 em {
   font-family: var(--font-serif);
